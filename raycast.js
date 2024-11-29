@@ -33,14 +33,16 @@ class Map {
             }
         }
     }
-	isWall(x, y) {
-		var column = Math.ceil(x / 32);	
-		var row = Math.ceil(y / 32);	
-		if(this.grid[row,column] == 1)
+	hasWallAt(x, y) {
+		if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT) {
 			return true;
-		else
-			return false;
+		}
+
+		var mapGridIndexX = Math.floor(x / TILE_SIZE);	
+		var mapGridIndexY = Math.floor(y / TILE_SIZE);	
+		return this.grid[mapGridIndexY][mapGridIndexX] == 1;
 	}
+}
 
 class Player {
     constructor() {
@@ -69,9 +71,14 @@ class Player {
 
         //we have a move vector. convert that to x,y for the new player
 		//position at the end of the vector
-		var next 
-		this.x = this.x + Math.cos(this.rotationAngle) * moveStep;
-        this.y = this.y + Math.sin(this.rotationAngle) * moveStep;
+		var newPlayerX = this.x + Math.cos(this.rotationAngle) * moveStep;
+        var newPlayerY = this.y + Math.sin(this.rotationAngle) * moveStep;
+
+		//only set new player position if it is not colliding with the map walls
+		if (!grid.hasWallAt(newPlayerX, newPlayerY)) {
+			this.x = newPlayerX;
+			this.y = newPlayerY;
+		}
     }
     render() {
         noStroke();
